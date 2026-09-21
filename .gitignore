@@ -1,0 +1,19 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# 会话历史（可能含敏感内容，勿提交）
+*.jsonl
+
+# 环境变量 / 密钥
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
