@@ -1,0 +1,192 @@
+{
+  "tools": "legacy",
+  "resolved": 7,
+  "total": 7,
+  "results": [
+    {
+      "id": "t1_csv_quoted_comma",
+      "title": "CSV 引号字段解析",
+      "tools": "legacy",
+      "resolved": true,
+      "reason": "全部通过",
+      "steps": 14,
+      "seconds": 31.9,
+      "tools_used": {
+        "list_dir": 1,
+        "exec": 9,
+        "read_file": 3,
+        "write_file": 4
+      },
+      "baseline": {
+        "issue": "3 failed, 1 passed in 2.35s",
+        "existing": "2 passed in 0.02s"
+      },
+      "files_changed": [
+        "_check_tmp.py",
+        "csvlite.py"
+      ],
+      "used_edit_tool": true,
+      "bypassed_edit_tool": false,
+      "fail_to_pass": "4 passed in 0.01s",
+      "pass_to_pass": "2 passed in 0.01s"
+    },
+    {
+      "id": "t2_pagination_offbyone",
+      "title": "分页边界与向上取整",
+      "tools": "legacy",
+      "resolved": true,
+      "reason": "全部通过",
+      "steps": 6,
+      "seconds": 12.2,
+      "tools_used": {
+        "list_dir": 1,
+        "exec": 4,
+        "read_file": 3,
+        "write_file": 1
+      },
+      "baseline": {
+        "issue": "4 failed, 2 passed in 1.05s",
+        "existing": "3 passed in 0.02s"
+      },
+      "files_changed": [
+        "pagination.py"
+      ],
+      "used_edit_tool": true,
+      "bypassed_edit_tool": false,
+      "fail_to_pass": "6 passed in 0.01s",
+      "pass_to_pass": "3 passed in 0.01s"
+    },
+    {
+      "id": "t3_interval_merge",
+      "title": "区间合并边界",
+      "tools": "legacy",
+      "resolved": true,
+      "reason": "全部通过",
+      "steps": 6,
+      "seconds": 12.5,
+      "tools_used": {
+        "list_dir": 1,
+        "exec": 4,
+        "read_file": 3,
+        "write_file": 1
+      },
+      "baseline": {
+        "issue": "2 failed, 4 passed in 1.14s",
+        "existing": "3 passed in 0.02s"
+      },
+      "files_changed": [
+        "intervals.py"
+      ],
+      "used_edit_tool": true,
+      "bypassed_edit_tool": false,
+      "fail_to_pass": "6 passed in 0.01s",
+      "pass_to_pass": "3 passed in 0.01s"
+    },
+    {
+      "id": "t4_lru_cache",
+      "title": "LRU 淘汰顺序与计数",
+      "tools": "legacy",
+      "resolved": true,
+      "reason": "全部通过",
+      "steps": 7,
+      "seconds": 14.6,
+      "tools_used": {
+        "list_dir": 1,
+        "exec": 5,
+        "read_file": 3,
+        "write_file": 1
+      },
+      "baseline": {
+        "issue": "3 failed, 3 passed in 1.61s",
+        "existing": "2 passed in 0.02s"
+      },
+      "files_changed": [
+        "lru.py"
+      ],
+      "used_edit_tool": true,
+      "bypassed_edit_tool": false,
+      "fail_to_pass": "6 passed in 0.05s",
+      "pass_to_pass": "2 passed in 0.01s"
+    },
+    {
+      "id": "t5_jsonpath_get",
+      "title": "点号路径支持数组下标",
+      "tools": "legacy",
+      "resolved": true,
+      "reason": "全部通过",
+      "steps": 9,
+      "seconds": 19.2,
+      "tools_used": {
+        "list_dir": 1,
+        "exec": 6,
+        "read_file": 3,
+        "write_file": 2
+      },
+      "baseline": {
+        "issue": "7 failed, 2 passed in 2.45s",
+        "existing": "2 passed in 0.02s"
+      },
+      "files_changed": [
+        "jsonpath_lite.py"
+      ],
+      "used_edit_tool": true,
+      "bypassed_edit_tool": false,
+      "fail_to_pass": "9 passed in 0.02s",
+      "pass_to_pass": "2 passed in 0.01s"
+    },
+    {
+      "id": "t6_slotkit_merge",
+      "title": "日程区间相接未合并（大文件）",
+      "tools": "legacy",
+      "resolved": true,
+      "reason": "全部通过",
+      "steps": 15,
+      "seconds": 66.8,
+      "tools_used": {
+        "list_dir": 1,
+        "exec": 13,
+        "read_file": 4,
+        "write_file": 2
+      },
+      "baseline": {
+        "issue": "3 failed, 7 passed in 3.32s",
+        "existing": "8 passed in 0.04s"
+      },
+      "files_changed": [
+        "_apply_fix.py",
+        "slotkit.py"
+      ],
+      "used_edit_tool": true,
+      "bypassed_edit_tool": false,
+      "fail_to_pass": "10 passed in 0.09s",
+      "pass_to_pass": "8 passed in 0.02s"
+    },
+    {
+      "id": "t7_unitcalc",
+      "title": "跨单位相加未换算（大文件）",
+      "tools": "legacy",
+      "resolved": true,
+      "reason": "全部通过",
+      "steps": 20,
+      "seconds": 43.5,
+      "tools_used": {
+        "list_dir": 1,
+        "exec": 16,
+        "read_file": 7,
+        "write_file": 2
+      },
+      "baseline": {
+        "issue": "9 failed, 3 passed in 2.34s",
+        "existing": "14 passed in 0.04s"
+      },
+      "files_changed": [
+        "_apply_fix.py",
+        "unitcalc.py"
+      ],
+      "used_edit_tool": true,
+      "bypassed_edit_tool": false,
+      "fail_to_pass": "12 passed in 0.06s",
+      "pass_to_pass": "14 passed in 0.16s"
+    }
+  ]
+}

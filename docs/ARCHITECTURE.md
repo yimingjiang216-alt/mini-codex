@@ -77,9 +77,55 @@ approval → select sandbox → attempt
 | `ToolOrchestrator` 循环 | `agent.py` 里的 `run_loop()` |
 | `turn.rs` 单轮 | `agent.py` 的 while 循环一次迭代 |
 | `unified_exec` 命令执行 | `subprocess` 包一层 |
-| `apply_patch` | 简化版的 patch 文本协议 |
+| `apply_patch`（`apply-patch/` crate） | `patch.py` + `patch_apply.py`（对齐 25 个官方场景） |
 
-## 6. 最小闭环要满足的硬性条件
+## 6. 补丁协议（apply_patch）
+
+Codex 让模型改文件的主要手段不是「重写整个文件」，而是一段**结构化补丁文本**。
+补丁的语法常量定义在 `codex-rs/apply-patch/src/parser.rs`：
+
+```
+*** Begin Patch
+*** Add File: 新文件路径
++新增的一行
+*** Delete File: 要删的文件
+*** Update File: 要改的文件
+*** Move to: 移动后的路径        （可选，紧跟在 Update File 之后）
+@@ 定位用的上下文            （可选；不写则从文件开头找）
+ 保持不变的一行              （前导一个空格）
+-要删掉的一行
++要换上的一行
+*** End of File                （可选，表示改到文件末尾）
+*** End Patch
+```
+
+几个容易踩的点，`mini-codex` 的实现都照着 `codex-rs` 对齐了：
+
+1. **定位是逐级放宽的**（`seek_sequence.rs`）：先精确匹配，失败则忽略行尾空白，
+   再失败则忽略首尾空白，最后把全角标点归一成 ASCII 再试一次。
+2. **每个 chunk 都从第 0 行重新开始找**（`file_update.rs` 的 `compute_replacements`），
+   不是接着上一个 chunk 的位置继续。
+3. **纯插入（`-` 行一个都没有）一律追加到文件末尾**，而不是插到上下文附近。
+4. **空补丁直接报错**：`lib.rs` 里 `if hunks.is_empty() { bail!("No files were modified.") }`。
+5. **部分成功之后失败不回滚**，错误信息会带上已经改过的文件列表。
+6. 修改文件时删除的行必须与文件里**逐字一致**（允许首尾空白差异）。
+
+`mini-codex` 用 `tests_patch.py` 直接跑 `codex-rs/apply-patch/tests/fixtures/scenarios/`
+下的 25 个官方场景来验证对齐情况。注意官方说明：
+
+> We intentionally do not assert on the exit status here; the scenarios are
+> specified purely in terms of final filesystem state.
+
+所以「被拒绝」场景的正确含义是：**补丁被拒绝 → 文件保持原样 → 与 expected/ 一致**。
+
+### 编辑后语法检查
+
+补丁落盘后，`linting.py` 会对每个被改动的 `.py` 文件做一次语法检查
+（`compile()` 试解析），把出错的行列位置作为附加信息回灌给模型。
+这个思路借鉴自 SWE-agent 的 `windowed_edit_linting`——它用 flake8 做同类的事。
+好处是模型能**立刻**发现自己刚写坏了语法，而不是等跑测试时才发现。
+
+## 7. 最小闭环要满足的硬性条件
 
 1. 消息历史里**必须回填工具结果**，模型才知道执行结果。
 2. 工具 schema 要作为 `tools` 参数传给模型（function calling）。

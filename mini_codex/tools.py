@@ -16,6 +16,10 @@ import os
 import subprocess
 from dataclasses import dataclass
 
+from .linting import lint_changed
+from .patch import PatchParseError, parse_patch
+from .patch_apply import PatchApplyError, apply_patch
+
 MAX_OUTPUT = 8000  # 工具输出截断上限，避免撑爆上下文
 MAX_TIMEOUT = 120   # 命令执行超时（秒）
 
@@ -112,6 +116,28 @@ def tool_list_dir(args: dict) -> ToolResult:
         return ToolResult(str(e), is_error=True)
 
 
+def tool_apply_patch(args: dict) -> ToolResult:
+    """应用一个补丁。对齐 codex 的 apply_patch 工具。"""
+    patch_text = args.get("patch", "")
+    cwd = args.get("cwd", ".")
+    if not patch_text.strip():
+        return ToolResult("patch 参数为空", is_error=True)
+    try:
+        parsed = parse_patch(patch_text)
+        changed, summaries = apply_patch(parsed.hunks, cwd=cwd)
+    except PatchParseError as e:
+        return ToolResult("补丁格式错误：%s" % e, is_error=True)
+    except PatchApplyError as e:
+        return ToolResult("补丁应用失败：%s" % e, is_error=True)
+
+    body = "已应用：" + "；".join(summaries)
+    # 编辑后自动语法检查（借鉴 SWE-agent 的 lint 回灌）
+    warn = lint_changed(changed, cwd=cwd)
+    if warn:
+        body += "\n\n" + warn
+    return ToolResult(body)
+
+
 # ---------- 工具注册表 ----------
 
 def _def(name: str, desc: str, params: dict) -> ToolSpec:
@@ -142,6 +168,34 @@ TOOLS: dict[str, tuple[ToolSpec, object]] = {
             "required": ["path"],
         },
     ), tool_read),
+    "apply_patch": (_def(
+        "apply_patch",
+        "用一个补丁修改文件。支持三种操作：新增文件、删除文件、修改文件（可含多处改动，"
+        "也可用 *** Move to: 移动/重命名）。比 write_file 更适合改大文件中的一小部分。\n"
+        "补丁格式（第一行和最后一行必须是标记，换行符为 \\n，不会写就用空的 *** End Patch）：\n"
+        "*** Begin Patch\n"
+        "*** Add File: 路径\n"
+        "+新增内容（每行前面加一个 +）\n"
+        "*** Delete File: 路径\n"
+        "*** Update File: 路径\n"
+        "*** Move to: 新路径   （可选，仅 Update File 之后，紧邻）\n"
+        "@@ 定位用的上下文行   （可选，用来缩小查找范围，不要带前导空格）\n"
+        " 保持不变的行       （前导一个空格）\n"
+        "-要删除的行\n"
+        "+要新增的行\n"
+        "*** End Patch\n"
+        "规则：Update File 里每个 @@ 开头的块是一处改动；如果只写 @@ 后面不写上下文，"
+        "则从文件开头找。要删除的行必须与文件里完全一致（允许首尾空白差异）。"
+        "新增文件用 Add File，不要用 Update File 创建新文件。",
+        {
+            "type": "object",
+            "properties": {
+                "patch": {"type": "string", "description": "补丁全文，以 *** Begin Patch 开头、*** End Patch 结尾"},
+                "cwd": {"type": "string", "description": "工作目录，默认 '.'"},
+            },
+            "required": ["patch"],
+        },
+    ), tool_apply_patch),
     "write_file": (_def(
         "write_file",
         "创建或覆盖一个文本文件。",

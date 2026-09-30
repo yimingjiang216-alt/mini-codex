@@ -1,0 +1,7 @@
+{
+  "id": "t6",
+  "title": "日程区间相接未合并（大文件）",
+  "fail_to_pass": 10,
+  "difficulty": "medium",
+  "note": "源文件 349 行，只需改 1 行；用于对比 write_file 与 apply_patch"
+}

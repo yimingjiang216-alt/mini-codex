@@ -1,0 +1,6 @@
+{
+  "id": "t4",
+  "title": "LRU 淘汰顺序与计数",
+  "fail_to_pass": 6,
+  "difficulty": "medium"
+}

@@ -1,0 +1,6 @@
+{
+  "id": "t5",
+  "title": "点号路径支持数组下标",
+  "fail_to_pass": 9,
+  "difficulty": "medium"
+}

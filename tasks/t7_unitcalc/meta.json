@@ -1,0 +1,7 @@
+{
+  "id": "t7",
+  "title": "跨单位相加未换算（大文件）",
+  "fail_to_pass": 12,
+  "difficulty": "medium",
+  "note": "源文件 462 行，只需改 2 行；用于对比 write_file 与 apply_patch"
+}

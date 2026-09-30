@@ -1,0 +1,182 @@
+{
+  "summary": {
+    "model": "deepseek-v4-flash",
+    "tasks": 7,
+    "legacy": {
+      "resolved": 7,
+      "total": 7,
+      "total_steps": 77,
+      "total_seconds": 200.7
+    },
+    "patch": {
+      "resolved": 7,
+      "total": 7,
+      "total_steps": 65,
+      "total_seconds": 164.0
+    },
+    "note": "exec 已限制为只读，编辑必须经由被测的编辑工具"
+  },
+  "tasks": [
+    {
+      "id": "t1_csv_quoted_comma",
+      "title": "CSV 引号字段解析",
+      "src_lines": 25,
+      "legacy": {
+        "steps": 14,
+        "seconds": 31.9,
+        "resolved": true,
+        "write_file_calls": 4,
+        "exec_calls": 9
+      },
+      "patch": {
+        "steps": 15,
+        "seconds": 50.1,
+        "resolved": true,
+        "apply_patch_calls": 3,
+        "exec_calls": 10
+      },
+      "edit_payload": {
+        "write_file_chars": null,
+        "apply_patch_chars": null
+      }
+    },
+    {
+      "id": "t2_pagination_offbyone",
+      "title": "分页边界与向上取整",
+      "src_lines": 38,
+      "legacy": {
+        "steps": 6,
+        "seconds": 12.2,
+        "resolved": true,
+        "write_file_calls": 1,
+        "exec_calls": 4
+      },
+      "patch": {
+        "steps": 7,
+        "seconds": 16.5,
+        "resolved": true,
+        "apply_patch_calls": 1,
+        "exec_calls": 6
+      },
+      "edit_payload": {
+        "write_file_chars": null,
+        "apply_patch_chars": null
+      }
+    },
+    {
+      "id": "t3_interval_merge",
+      "title": "区间合并边界",
+      "src_lines": 32,
+      "legacy": {
+        "steps": 6,
+        "seconds": 12.5,
+        "resolved": true,
+        "write_file_calls": 1,
+        "exec_calls": 4
+      },
+      "patch": {
+        "steps": 6,
+        "seconds": 15.7,
+        "resolved": true,
+        "apply_patch_calls": 1,
+        "exec_calls": 4
+      },
+      "edit_payload": {
+        "write_file_chars": null,
+        "apply_patch_chars": null
+      }
+    },
+    {
+      "id": "t4_lru_cache",
+      "title": "LRU 淘汰顺序与计数",
+      "src_lines": 29,
+      "legacy": {
+        "steps": 7,
+        "seconds": 14.6,
+        "resolved": true,
+        "write_file_calls": 1,
+        "exec_calls": 5
+      },
+      "patch": {
+        "steps": 8,
+        "seconds": 19.9,
+        "resolved": true,
+        "apply_patch_calls": 1,
+        "exec_calls": 6
+      },
+      "edit_payload": {
+        "write_file_chars": 684,
+        "apply_patch_chars": 289
+      }
+    },
+    {
+      "id": "t5_jsonpath_get",
+      "title": "点号路径支持数组下标",
+      "src_lines": 29,
+      "legacy": {
+        "steps": 9,
+        "seconds": 19.2,
+        "resolved": true,
+        "write_file_calls": 2,
+        "exec_calls": 6
+      },
+      "patch": {
+        "steps": 7,
+        "seconds": 15.4,
+        "resolved": true,
+        "apply_patch_calls": 2,
+        "exec_calls": 4
+      },
+      "edit_payload": {
+        "write_file_chars": null,
+        "apply_patch_chars": null
+      }
+    },
+    {
+      "id": "t6_slotkit_merge",
+      "title": "日程区间相接未合并",
+      "src_lines": 348,
+      "legacy": {
+        "steps": 15,
+        "seconds": 66.8,
+        "resolved": true,
+        "write_file_calls": 2,
+        "exec_calls": 13
+      },
+      "patch": {
+        "steps": 8,
+        "seconds": 17.5,
+        "resolved": true,
+        "apply_patch_calls": 1,
+        "exec_calls": 6
+      },
+      "edit_payload": {
+        "write_file_chars": 9597,
+        "apply_patch_chars": 293
+      }
+    },
+    {
+      "id": "t7_unitcalc",
+      "title": "跨单位相加未换算",
+      "src_lines": 462,
+      "legacy": {
+        "steps": 20,
+        "seconds": 43.5,
+        "resolved": true,
+        "write_file_calls": 2,
+        "exec_calls": 16
+      },
+      "patch": {
+        "steps": 14,
+        "seconds": 28.9,
+        "resolved": true,
+        "apply_patch_calls": 1,
+        "exec_calls": 12
+      },
+      "edit_payload": {
+        "write_file_chars": 13892,
+        "apply_patch_chars": 352
+      }
+    }
+  ]
+}
