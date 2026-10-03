@@ -1,4 +1,4 @@
-﻿# mini-codex
+# mini-codex
 
 一个从零手写的极简编程代理（coding agent），架构源自对
 [openai/codex](https://github.com/openai/codex) `codex-rs` 源码的拆解与复刻。
@@ -7,19 +7,36 @@
 Codex 的核心本质——「模型 ↔ 工具」的执行循环（agent loop），让读者能逐行读懂
 一个编程代理到底是怎么工作起来的。
 
-## ✨ 特性
+## 一、一轮 Agent 循环的数据链
 
-- 🔁 **Agent Loop**：模型自主决定调用工具、观察结果、继续推理，直至完成任务
-- 🧰 **内置工具**：`exec`、`read_file`、`apply_patch`、`write_file`、`list_dir`
-- 🩹 **补丁式编辑**：`apply_patch` 复刻 Codex 的补丁语法，改大文件不必整文件重写；
+```
+用户指令
+  ↓
+组装上下文: 系统提示 + 工具清单 (name + description + JSON Schema) + 对话历史
+  ↓
+模型流式输出 → 解析出工具调用 JSON (如 list_dir {"path": "."})
+  ↓
+执行工具 → 结果文本回灌进对话历史
+  ↓
+模型继续推理 …… 循环, 直到模型不再调用工具, 输出最终回答
+```
+
+编辑走 `apply_patch` 时的分支：解析补丁语法 → 按 chunk 定位改写文件 →
+立即做一次语法检查，失败则把报错回灌给模型自修——这是与 Codex 对齐的关键一环。
+
+## 二、特性
+
+- **Agent Loop**：模型自主决定调用工具、观察结果、继续推理，直至完成任务
+- **内置工具**：`exec`、`read_file`、`apply_patch`、`write_file`、`list_dir`
+- **补丁式编辑**：`apply_patch` 复刻 Codex 的补丁语法，改大文件不必整文件重写；
   语法与边界行为对齐 `codex-rs/apply-patch` 的 25 个官方测试场景
-- 🔍 **编辑后自动语法检查**：补丁应用后立刻做一次语法检查，发现问题直接回灌给模型
-- 💬 **多轮对话**：交互式 REPL，跨轮次记住上下文
-- 💾 **会话持久化**：历史保存到 `.jsonl`，重启后继续
-- ⚡ **流式输出**：思考过程与回答逐字流式显示，体验更顺
-- 🔌 **双后端**：任意 OpenAI 兼容接口 + 本地 Ollama
+- **编辑后自动语法检查**：补丁应用后立刻做一次语法检查，发现问题直接回灌给模型
+- **多轮对话**：交互式 REPL，跨轮次记住上下文
+- **会话持久化**：历史保存到 `.jsonl`，重启后继续
+- **流式输出**：思考过程与回答逐字流式显示
+- **双后端**：任意 OpenAI 兼容接口 + 本地 Ollama
 
-## 🚀 快速开始
+## 快速开始
 
 ### 环境要求
 
@@ -67,7 +84,7 @@ python -m mini_codex "列出当前目录下所有文件"
 python -m mini_codex -s session.jsonl
 ```
 
-## 📖 使用示例
+## 使用示例
 
 ```
 $ python -m mini_codex "帮我看看这个项目里有哪些文件"
@@ -84,7 +101,7 @@ The user wants to list the files...        ← 思考过程（流式）
 当前目录下有 README.md、docs、mini_codex、pyproject.toml ...   ← 最终回答（流式）
 ```
 
-## 🧭 架构（与 Codex 的对应关系）
+## 架构（与 Codex 的对应关系）
 
 详见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)。核心映射如下：
 
@@ -115,7 +132,7 @@ eval/
 tasks/            # 7 个自建任务（各自是一个带 bug 的迷你仓库）
 ```
 
-## 🧪 评测
+## 评测
 
 `tasks/` 下有 7 个自建任务，每个都是一个独立的小仓库：一个带 bug 的实现、
 一组「必须保持通过」的原有测试（`test_existing.py`）、一组「修复前必须是红的」
@@ -130,7 +147,7 @@ tasks/            # 7 个自建任务（各自是一个带 bug 的迷你仓库�
 
 模型 `deepseek-v4-flash`，步数上限 30，`exec` 限制为只读以免绕过被测的编辑接口。
 
-**要如实说明的结论**：在这个任务规模上，两种接口的**解决率没有差别**，都是全对。
+结论：在这个任务规模上，两种接口的解决率没有差别，都是全对。
 差别体现在**开销**上——任务越大越明显：
 
 | 任务 | 源文件行数 | legacy 步/耗时 | patch 步/耗时 | write_file 输出 | apply_patch 输出 |
@@ -151,7 +168,15 @@ python eval/run_eval.py --tools patch  --json eval/result_patch.json
 ```
 
 
-## ⚠️ 局限
+## 方法与出处
+
+| 本仓库用到的方法 | 出处 |
+|---|---|
+| Agent 循环（推理-行动交替）范式 | Yao et al., *ReAct: Synergizing Reasoning and Acting in Language Models*, ICLR 2023, arXiv:2210.03629 |
+| 工程实现参照 | openai/codex 的 codex-rs 源码；apply_patch 语法对齐其 25 个官方测试场景 |
+| 本地模型后端 | Ollama (ollama.com) |
+
+## 局限
 
 这是教学项目，刻意省略了真实 Codex 的工程能力，包括：
 
@@ -160,10 +185,10 @@ python eval/run_eval.py --tools patch  --json eval/result_patch.json
 - ❌ 流式解析（工具调用要等完整 JSON 才能执行）
 - ❌ 会话级上下文压缩与 token 预算控制
 
-## 📄 许可
+## 许可
 
 [MIT](LICENSE)
 
-## 🙏 致谢
+## 致谢
 
 架构理解源自 [openai/codex](https://github.com/openai/codex) 的开源代码。
